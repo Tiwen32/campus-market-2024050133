@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import Layout from '@/components/Layout.vue'
+import AppLayout from '@/components/AppLayout.vue'
 </script>
 
 <template>
-  <Layout />
+  <AppLayout />
 </template>
 
 <style>

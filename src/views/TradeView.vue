@@ -10,7 +10,6 @@ import product6 from '@/assets/images/products/product-6.svg'
 
 const router = useRouter()
 
-// 商品列表数据
 const productList = ref([
   {
     id: 1,
@@ -80,24 +79,21 @@ const productList = ref([
   },
 ])
 
-// 跳转详情页
 const goToDetail = (id: number) => {
   router.push({
-    path: '/detail',
+    path: '/trade',
     query: { id: id.toString() }
   })
 }
 </script>
 
 <template>
-  <div class="list-page">
-    <!-- 页面标题 -->
+  <div class="trade-page">
     <div class="page-header">
-      <h1>商品列表</h1>
+      <h1>二手交易</h1>
       <p>发现校园里的好物</p>
     </div>
 
-    <!-- 商品网格 -->
     <div class="product-grid">
       <div
         v-for="product in productList"
@@ -127,7 +123,6 @@ const goToDetail = (id: number) => {
 </template>
 
 <style scoped>
-/* 页面标题 */
 .page-header {
   margin-bottom: 24px;
 }
@@ -143,14 +138,12 @@ const goToDetail = (id: number) => {
   font-size: 14px;
 }
 
-/* 商品网格 */
 .product-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 20px;
 }
 
-/* 商品卡片 */
 .product-card {
   background: white;
   border-radius: 12px;
@@ -165,7 +158,6 @@ const goToDetail = (id: number) => {
   box-shadow: 0 8px 24px rgba(255, 124, 58, 0.15);
 }
 
-/* 商品图片 */
 .product-image {
   position: relative;
   width: 100%;
@@ -194,7 +186,6 @@ const goToDetail = (id: number) => {
   font-weight: 500;
 }
 
-/* 商品信息 */
 .product-info {
   padding: 14px;
 }
@@ -242,7 +233,6 @@ const goToDetail = (id: number) => {
   color: #999;
 }
 
-/* 响应式设计 */
 @media (max-width: 1024px) {
   .product-grid {
     grid-template-columns: repeat(2, 1fr);

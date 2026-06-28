@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 
-// 用户信息
 const userInfo = ref({
   name: '张同学',
   avatar: '张',
@@ -12,7 +11,6 @@ const userInfo = ref({
   joinDate: '2022-09-01'
 })
 
-// 统计数据
 const stats = ref([
   { label: '发布商品', value: 12 },
   { label: '已售出', value: 8 },
@@ -20,19 +18,17 @@ const stats = ref([
   { label: '浏览量', value: 567 },
 ])
 
-// 菜单列表
 const menuItems = ref([
-  { icon: '📦', label: '我的发布', path: '/list' },
-  { icon: '❤️', label: '我的收藏', path: '/list' },
-  { icon: '💰', label: '我的订单', path: '/list' },
-  { icon: '⭐', label: '我的评价', path: '/list' },
-  { icon: '⚙️', label: '账号设置', path: '/list' },
+  { icon: '📦', label: '我的发布', path: '/trade' },
+  { icon: '❤️', label: '我的收藏', path: '/trade' },
+  { icon: '💰', label: '我的订单', path: '/trade' },
+  { icon: '⭐', label: '我的评价', path: '/trade' },
+  { icon: '⚙️', label: '账号设置', path: '/trade' },
 ])
 </script>
 
 <template>
-  <div class="profile-page">
-    <!-- 用户信息卡片 -->
+  <div class="user-center-page">
     <div class="profile-card">
       <div class="profile-header">
         <div class="avatar-wrapper">
@@ -45,7 +41,6 @@ const menuItems = ref([
         </div>
       </div>
       
-      <!-- 统计数据 -->
       <div class="stats-row">
         <div v-for="stat in stats" :key="stat.label" class="stat-item">
           <span class="stat-value">{{ stat.value }}</span>
@@ -54,7 +49,6 @@ const menuItems = ref([
       </div>
     </div>
 
-    <!-- 菜单列表 -->
     <div class="menu-card">
       <div
         v-for="item in menuItems"
@@ -67,7 +61,6 @@ const menuItems = ref([
       </div>
     </div>
 
-    <!-- 联系方式 -->
     <div class="contact-card">
       <h3 class="card-title">联系方式</h3>
       <div class="contact-list">
@@ -95,13 +88,11 @@ const menuItems = ref([
       </div>
     </div>
 
-    <!-- 退出登录 -->
     <button class="logout-btn">退出登录</button>
   </div>
 </template>
 
 <style scoped>
-/* 用户信息卡片 */
 .profile-card {
   background: linear-gradient(135deg, var(--primary-orange) 0%, var(--dark-orange) 100%);
   border-radius: 16px;
@@ -162,7 +153,6 @@ const menuItems = ref([
   opacity: 0.9;
 }
 
-/* 统计数据 */
 .stats-row {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -186,7 +176,6 @@ const menuItems = ref([
   opacity: 0.9;
 }
 
-/* 菜单卡片 */
 .menu-card {
   background: white;
   border-radius: 12px;
@@ -228,7 +217,6 @@ const menuItems = ref([
   font-size: 16px;
 }
 
-/* 联系方式卡片 */
 .contact-card {
   background: white;
   border-radius: 12px;
@@ -275,7 +263,6 @@ const menuItems = ref([
   color: #333;
 }
 
-/* 退出登录按钮 */
 .logout-btn {
   width: 100%;
   background: white;
@@ -293,7 +280,6 @@ const menuItems = ref([
   background: #fff2f0;
 }
 
-/* 响应式设计 */
 @media (max-width: 640px) {
   .profile-card {
     padding: 20px;
