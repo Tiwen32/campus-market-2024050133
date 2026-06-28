@@ -5,14 +5,14 @@ const router = useRouter()
 const route = useRoute()
 
 const navItems = [
-  { path: '/home', label: '首页' },
+  { path: '/', label: '首页' },
   { path: '/trade', label: '二手交易' },
-  { path: '/lostfound', label: '失物招领' },
-  { path: '/groupbuy', label: '拼团' },
-  { path: '/errand', label: '跑腿' },
+  { path: '/lost-found', label: '失物招领' },
+  { path: '/group-buy', label: '拼单搭子' },
+  { path: '/errand', label: '跑腿委托' },
   { path: '/publish', label: '发布' },
   { path: '/message', label: '消息' },
-  { path: '/usercenter', label: '个人中心' },
+  { path: '/user', label: '个人中心' },
 ]
 
 const navigateTo = (path: string) => {
@@ -22,10 +22,6 @@ const navigateTo = (path: string) => {
 const isActive = (path: string) => {
   return route.path === path
 }
-
-defineEmits<{
-  closeMenu: []
-}>()
 </script>
 
 <template>
