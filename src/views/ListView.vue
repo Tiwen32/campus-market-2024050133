@@ -1,6 +1,12 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import product1 from '@/assets/images/products/product-1.svg'
+import product2 from '@/assets/images/products/product-2.svg'
+import product3 from '@/assets/images/products/product-3.svg'
+import product4 from '@/assets/images/products/product-4.svg'
+import product5 from '@/assets/images/products/product-5.svg'
+import product6 from '@/assets/images/products/product-6.svg'
 
 const router = useRouter()
 
@@ -11,7 +17,7 @@ const productList = ref([
     title: 'iPhone 14 Pro Max 256G',
     price: 5999,
     originalPrice: 7999,
-    image: 'https://via.placeholder.com/200x200/ff7c3a/ffffff?text=iPhone',
+    image: product1,
     location: '计算机学院',
     seller: '张同学',
     time: '2小时前',
@@ -22,7 +28,7 @@ const productList = ref([
     title: '《高等数学》同济第七版',
     price: 25,
     originalPrice: 49,
-    image: 'https://via.placeholder.com/200x200/36cfc9/ffffff?text=Math',
+    image: product2,
     location: '图书馆',
     seller: '李同学',
     time: '3小时前',
@@ -33,7 +39,7 @@ const productList = ref([
     title: '小米电动滑板车',
     price: 1200,
     originalPrice: 1999,
-    image: 'https://via.placeholder.com/200x200/975a96/ffffff?text=Scooter',
+    image: product3,
     location: '学生宿舍区',
     seller: '王同学',
     time: '5小时前',
@@ -44,7 +50,7 @@ const productList = ref([
     title: '联想ThinkPad笔记本',
     price: 3500,
     originalPrice: 5500,
-    image: 'https://via.placeholder.com/200x200/1890ff/ffffff?text=Laptop',
+    image: product4,
     location: '工程学院',
     seller: '赵同学',
     time: '昨天',
@@ -55,7 +61,7 @@ const productList = ref([
     title: '索尼WH-1000XM4耳机',
     price: 980,
     originalPrice: 1599,
-    image: 'https://via.placeholder.com/200x200/fadb14/333333?text=Sony',
+    image: product5,
     location: '体育馆旁',
     seller: '刘同学',
     time: '昨天',
@@ -66,7 +72,7 @@ const productList = ref([
     title: '宿舍小风扇',
     price: 35,
     originalPrice: 89,
-    image: 'https://via.placeholder.com/200x200/52c41a/ffffff?text=Fan',
+    image: product6,
     location: '宿舍楼',
     seller: '陈同学',
     time: '3天前',

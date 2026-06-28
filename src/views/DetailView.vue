@@ -1,6 +1,12 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import product1 from '@/assets/images/products/product-1.svg'
+import product2 from '@/assets/images/products/product-2.svg'
+import product3 from '@/assets/images/products/product-3.svg'
+import product4 from '@/assets/images/products/product-4.svg'
+import product5 from '@/assets/images/products/product-5.svg'
+import product6 from '@/assets/images/products/product-6.svg'
 
 const route = useRoute()
 const router = useRouter()
@@ -31,11 +37,7 @@ const allProducts = [
     price: 5999,
     originalPrice: 7999,
     description: '2023年3月购入，一直贴膜戴壳使用，成色很好。电池健康度96%，无任何维修记录。配件齐全（充电器、数据线、说明书）。因换新机出售，价格可小刀。',
-    images: [
-      'https://via.placeholder.com/400x400/ff7c3a/ffffff?text=iPhone+1',
-      'https://via.placeholder.com/400x400/ff7c3a/ffffff?text=iPhone+2',
-      'https://via.placeholder.com/400x400/ff7c3a/ffffff?text=iPhone+3',
-    ],
+    images: [product1],
     location: '计算机学院',
     seller: '张同学',
     sellerAvatar: '张',
@@ -51,9 +53,7 @@ const allProducts = [
     price: 25,
     originalPrice: 49,
     description: '大二上学期用书，笔记较少，主要在第一章有少量标注。书角有轻微折痕但不影响使用。适合学弟学妹们捡漏。',
-    images: [
-      'https://via.placeholder.com/400x400/36cfc9/ffffff?text=Math+Book',
-    ],
+    images: [product2],
     location: '图书馆',
     seller: '李同学',
     sellerAvatar: '李',
@@ -69,10 +69,7 @@ const allProducts = [
     price: 1200,
     originalPrice: 1999,
     description: '2022年双十一购买，主要用于短途代步。续航约45公里，最高时速25km/h。车身有轻微划痕（见照片），不影响使用。附送原装充电器和车锁。',
-    images: [
-      'https://via.placeholder.com/400x400/975a96/ffffff?text=Scooter+1',
-      'https://via.placeholder.com/400x400/975a96/ffffff?text=Scooter+2',
-    ],
+    images: [product3],
     location: '学生宿舍区',
     seller: '王同学',
     sellerAvatar: '王',
@@ -88,10 +85,7 @@ const allProducts = [
     price: 3500,
     originalPrice: 5500,
     description: '研究生期间使用，配置：i5-8265U/8G/512G SSD。运行流畅，用于编程和文档处理完全足够。键盘手感好，接口丰富。因毕业低价出。',
-    images: [
-      'https://via.placeholder.com/400x400/1890ff/ffffff?text=Laptop+1',
-      'https://via.placeholder.com/400x400/1890ff/ffffff?text=Laptop+2',
-    ],
+    images: [product4],
     location: '工程学院',
     seller: '赵同学',
     sellerAvatar: '赵',
@@ -107,9 +101,7 @@ const allProducts = [
     price: 980,
     originalPrice: 1599,
     description: '考研期间用来隔音，效果很好。现在已上岸用不上了。降噪效果出色，续航给力。有原装收纳盒和耳机线。',
-    images: [
-      'https://via.placeholder.com/400x400/fadb14/333333?text=Sony+XM4',
-    ],
+    images: [product5],
     location: '体育馆旁',
     seller: '刘同学',
     sellerAvatar: '刘',
@@ -125,9 +117,7 @@ const allProducts = [
     price: 35,
     originalPrice: 89,
     description: '夏天神器，可充电款，续航持久。买了空调后就闲置了。功率小省电，睡觉时用很安静。',
-    images: [
-      'https://via.placeholder.com/400x400/52c41a/ffffff?text=Fan',
-    ],
+    images: [product6],
     location: '宿舍楼',
     seller: '陈同学',
     sellerAvatar: '陈',
@@ -154,7 +144,7 @@ const toggleLike = () => {
 onMounted(() => {
   // 获取路由参数中的 id
   const productId = parseInt(route.query.id as string) || 1
-  
+
   // 查找对应的商品数据
   const product = allProducts.find(p => p.id === productId)
   if (product) {
@@ -519,11 +509,11 @@ onMounted(() => {
     grid-template-columns: 1fr;
     gap: 20px;
   }
-  
+
   .main-image {
     aspect-ratio: 4/3;
   }
-  
+
   .current-price {
     font-size: 28px;
   }

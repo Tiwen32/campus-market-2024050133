@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 
 const router = useRouter()
@@ -15,6 +15,11 @@ const navItems = [
   { path: '/board', label: '数据看板' },
   { path: '/profile', label: '个人中心' },
 ]
+
+// 判断是否显示导航栏
+const showNav = computed(() => {
+  return route.meta.showNav !== false
+})
 
 // 切换菜单显示
 const toggleMenu = () => {
@@ -36,7 +41,7 @@ const isActive = (path: string) => {
 <template>
   <div class="layout">
     <!-- 顶部导航栏 -->
-    <header class="header">
+    <header v-if="showNav" class="header">
       <div class="header-content">
         <div class="logo" @click="navigateTo('/home')">
           <span class="logo-icon">橙</span>
