@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import AppHeader from './AppHeader.vue'
+import AppFooter from './AppFooter.vue'
 </script>
 
 <template>
@@ -8,6 +9,7 @@ import AppHeader from './AppHeader.vue'
     <main class="main-content">
       <RouterView />
     </main>
+    <AppFooter />
   </div>
 </template>
 
@@ -21,11 +23,13 @@ import AppHeader from './AppHeader.vue'
   max-width: 1200px;
   margin: 0 auto;
   padding: 24px;
+  padding-bottom: 100px;
 }
 
 @media (max-width: 768px) {
   .main-content {
     padding: 16px;
+    padding-bottom: 80px;
   }
 }
 </style>

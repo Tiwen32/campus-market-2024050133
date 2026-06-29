@@ -16,7 +16,7 @@ const toggleMenu = () => {
 }
 
 const goHome = () => {
-  router.push('/home')
+  router.push('/')
   isMenuOpen.value = false
 }
 </script>
