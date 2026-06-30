@@ -1,11 +1,14 @@
 <script setup lang="ts">
 import { ref, onMounted, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
-import { useMessageStore } from '@/stores/messages'
-import { mockMessages } from '@/api/mockData'
+import { getConversations, getMessages, sendMessage, type Conversation, type ChatMessage } from '@/api/chat'
 
 const router = useRouter()
-const messageStore = useMessageStore()
+
+const conversations = ref<Conversation[]>([])
+const currentConversationId = ref<number | null>(null)
+const currentMessages = ref<ChatMessage[]>([])
+const currentConversation = ref<Conversation | null>(null)
 
 const newMessage = ref('')
 const messagesContainer = ref<HTMLElement | null>(null)
@@ -19,16 +22,51 @@ const scrollToBottom = async () => {
   }
 }
 
-const handleSelectConversation = (conversationId: string) => {
-  messageStore.selectConversation(conversationId)
-  scrollToBottom()
+const fetchConversations = async () => {
+  try {
+    const response = await getConversations(1)
+    conversations.value = response.data
+    if (conversations.value.length > 0 && !currentConversationId.value) {
+      handleSelectConversation(conversations.value[0].id)
+    }
+  } catch (error) {
+    console.error('获取会话列表失败:', error)
+  }
 }
 
-const handleSendMessage = () => {
-  if (newMessage.value.trim() && messageStore.currentConversationId) {
-    messageStore.sendMessage(messageStore.currentConversationId, newMessage.value.trim())
-    newMessage.value = ''
+const fetchMessages = async (conversationId: number) => {
+  try {
+    const response = await getMessages(conversationId)
+    currentMessages.value = response.data
     scrollToBottom()
+  } catch (error) {
+    console.error('获取消息列表失败:', error)
+  }
+}
+
+const handleSelectConversation = (conversationId: number) => {
+  currentConversationId.value = conversationId
+  currentConversation.value = conversations.value.find(c => c.id === conversationId) || null
+  fetchMessages(conversationId)
+}
+
+const handleSendMessage = async () => {
+  if (newMessage.value.trim() && currentConversationId.value) {
+    try {
+      const response = await sendMessage({
+        conversationId: currentConversationId.value,
+        senderId: 1,
+        senderName: '橙同学',
+        content: newMessage.value.trim(),
+        timestamp: new Date().toLocaleString('zh-CN'),
+        isRead: false,
+      })
+      currentMessages.value.push(response.data)
+      newMessage.value = ''
+      scrollToBottom()
+    } catch (error) {
+      console.error('发送消息失败:', error)
+    }
   }
 }
 
@@ -59,11 +97,23 @@ const handleImageChange = (e: Event) => {
   }
 }
 
-const handleSendImage = () => {
-  if (previewImage.value && messageStore.currentConversationId) {
-    messageStore.sendImage(messageStore.currentConversationId, previewImage.value)
-    previewImage.value = ''
-    scrollToBottom()
+const handleSendImage = async () => {
+  if (previewImage.value && currentConversationId.value) {
+    try {
+      const response = await sendMessage({
+        conversationId: currentConversationId.value,
+        senderId: 1,
+        senderName: '橙同学',
+        content: previewImage.value,
+        timestamp: new Date().toLocaleString('zh-CN'),
+        isRead: false,
+      })
+      currentMessages.value.push(response.data)
+      previewImage.value = ''
+      scrollToBottom()
+    } catch (error) {
+      console.error('发送图片失败:', error)
+    }
   }
 }
 
@@ -78,18 +128,12 @@ const handleImagePreview = (imageUrl: string) => {
   previewImage.value = imageUrl
 }
 
+const isImageMessage = (content: string) => {
+  return content.startsWith('data:image') || content.startsWith('http')
+}
+
 onMounted(() => {
-  if (messageStore.conversations.length === 0) {
-    mockMessages.forEach(msg => {
-      messageStore.addConversation(msg)
-    })
-  }
-  if (messageStore.conversations.length > 0 && !messageStore.currentConversationId) {
-    const firstConv = messageStore.conversations[0]
-    if (firstConv) {
-      messageStore.selectConversation(firstConv.id)
-    }
-  }
+  fetchConversations()
 })
 </script>
 
@@ -99,27 +143,27 @@ onMounted(() => {
       <div class="conversation-list">
         <div class="list-header">
           <h2>消息</h2>
-          <span class="unread-count" v-if="messageStore.totalUnread > 0">
-            {{ messageStore.totalUnread }}
+          <span class="unread-count" v-if="conversations.reduce((sum, c) => sum + c.unreadCount, 0) > 0">
+            {{ conversations.reduce((sum, c) => sum + c.unreadCount, 0) }}
           </span>
         </div>
 
         <div class="conversation-items">
           <div
-            v-for="conv in messageStore.conversations"
+            v-for="conv in conversations"
             :key="conv.id"
-            :class="['conversation-item', { active: messageStore.currentConversationId === conv.id }]"
+            :class="['conversation-item', { active: currentConversationId === conv.id }]"
             @click="handleSelectConversation(conv.id)"
           >
             <div class="conv-avatar">
-              {{ conv.userId === 'system' ? '🔔' : '👤' }}
+              👤
             </div>
             <div class="conv-info">
               <div class="conv-header">
-                <span class="conv-name">{{ conv.userName }}</span>
+                <span class="conv-name">{{ conv.sellerName }}</span>
                 <span class="conv-time">{{ conv.lastTime }}</span>
               </div>
-              <p class="conv-message">{{ conv.lastMessage }}</p>
+              <p class="conv-message">{{ conv.lastMessage || '点击开始聊天' }}</p>
             </div>
             <span v-if="conv.unreadCount > 0" class="conv-unread">
               {{ conv.unreadCount }}
@@ -129,29 +173,28 @@ onMounted(() => {
       </div>
 
       <div class="chat-area">
-        <div v-if="messageStore.currentConversation" class="chat-content">
+        <div v-if="currentConversation" class="chat-content">
           <div class="chat-header">
             <button class="back-btn" @click="handleBack">← 返回</button>
             <div class="chat-title">
-              <span class="chat-avatar">
-                {{ messageStore.currentConversation.userId === 'system' ? '🔔' : '👤' }}
-              </span>
-              <span>{{ messageStore.currentConversation.userName }}</span>
+              <span class="chat-avatar">👤</span>
+              <span>{{ currentConversation.sellerName }}</span>
+              <span class="chat-trade">{{ currentConversation.tradeTitle }}</span>
             </div>
           </div>
 
           <div ref="messagesContainer" class="messages-container">
             <div
-              v-for="msg in messageStore.currentConversation.messages"
+              v-for="msg in currentMessages"
               :key="msg.id"
-              :class="['message-item', { mine: msg.senderId === 'me' }]"
+              :class="['message-item', { mine: msg.senderId === 1 }]"
             >
-              <span class="msg-avatar">{{ msg.senderId === 'me' ? '🙂' : (msg.senderId === 'system' ? '🔔' : '👤') }}</span>
+              <span class="msg-avatar">{{ msg.senderId === 1 ? '🙂' : '👤' }}</span>
               <div class="msg-content">
                 <span class="msg-name">{{ msg.senderName }}</span>
                 <div class="msg-bubble">
-                  <span v-if="msg.type === 'text'">{{ msg.content }}</span>
-                  <img v-else-if="msg.type === 'image' && msg.image" :src="msg.image" class="msg-image" @click="handleImagePreview(msg.image)" />
+                  <span v-if="!isImageMessage(msg.content)">{{ msg.content }}</span>
+                  <img v-else :src="msg.content" class="msg-image" @click="handleImagePreview(msg.content)" />
                 </div>
                 <span class="msg-time">{{ msg.timestamp }}</span>
               </div>
@@ -359,10 +402,19 @@ onMounted(() => {
   font-size: 18px;
 }
 
-.chat-title span:last-child {
+.chat-title span:nth-child(2) {
   font-size: 16px;
   font-weight: 500;
   color: #333;
+}
+
+.chat-trade {
+  font-size: 12px;
+  color: #999;
+  background: #f5f5f5;
+  padding: 2px 8px;
+  border-radius: 4px;
+  margin-left: 8px;
 }
 
 .messages-container {

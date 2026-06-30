@@ -1,7 +1,7 @@
 {
   "trades": [
     {
-      "id": 1,
+      "id": "1",
       "title": "Apple MacBook Air M2 13寸",
       "price": 5800,
       "originalPrice": 8499,
@@ -18,7 +18,7 @@
       "status": "open"
     },
     {
-      "id": 2,
+      "id": "2",
       "title": "iPhone 14 Pro 256G 深空黑",
       "price": 4200,
       "originalPrice": 7999,
@@ -35,7 +35,7 @@
       "status": "open"
     },
     {
-      "id": 3,
+      "id": "3",
       "title": "小米电动滑板车 Pro2",
       "price": 1200,
       "originalPrice": 2999,
@@ -52,7 +52,7 @@
       "status": "open"
     },
     {
-      "id": 4,
+      "id": "4",
       "title": "考研英语真题黄皮书全套",
       "price": 45,
       "originalPrice": 128,
@@ -69,7 +69,7 @@
       "status": "open"
     },
     {
-      "id": 5,
+      "id": "5",
       "title": "宜家书架 白色",
       "price": 80,
       "originalPrice": 249,
@@ -86,7 +86,7 @@
       "status": "closed"
     },
     {
-      "id": 6,
+      "id": "6",
       "title": "AirPods Pro 2 代",
       "price": 980,
       "originalPrice": 1899,
@@ -103,7 +103,7 @@
       "status": "open"
     },
     {
-      "id": 7,
+      "id": "7",
       "title": "Nike Air Force 1 白色 42码",
       "price": 350,
       "originalPrice": 799,
@@ -120,7 +120,7 @@
       "status": "open"
     },
     {
-      "id": 8,
+      "id": "8",
       "title": "索尼WH-1000XM4耳机",
       "price": 1200,
       "originalPrice": 2499,
@@ -135,11 +135,215 @@
       "likes": 15,
       "image": "https://am.zdmimg.com/202505/23/683090cc5c2c21117.jpg_e1080.jpg",
       "status": "open"
+    },
+    {
+      "id": "9",
+      "title": "iPad Pro 11寸 2022款",
+      "price": 4500,
+      "originalPrice": 6799,
+      "category": "数码电子",
+      "condition": "like-new",
+      "description": "2023年购买，带Apple Pencil第二代，配件齐全，无划痕。",
+      "sellerId": 10,
+      "sellerName": "郑同学",
+      "campus": "狮子山校区",
+      "publishTime": "2026-06-29 09:45",
+      "views": 167,
+      "likes": 28,
+      "image": "https://ts2.tc.mm.bing.net/th/id/OIP-C.f1YvL7xW8X4H5J6K7M8N9O0P1Q2R3S4T5U6V7W8X9Y0Z?rs=1&pid=ImgDetMain&o=7&rm=3",
+      "status": "open"
+    },
+    {
+      "id": "10",
+      "title": "联想拯救者Y9000P 2023",
+      "price": 8500,
+      "originalPrice": 12999,
+      "category": "数码电子",
+      "condition": "good",
+      "description": "RTX4060显卡，i7-13700HX，16GB内存，512GB固态，游戏本。",
+      "sellerId": 11,
+      "sellerName": "孙同学",
+      "campus": "成龙校区",
+      "publishTime": "2026-06-28 15:20",
+      "views": 234,
+      "likes": 52,
+      "image": "https://ts3.tc.mm.bing.net/th/id/OIP-C.abcdefghijklmnopqrstuvwxyz?rs=1&pid=ImgDetMain&o=7&rm=3",
+      "status": "open"
+    },
+    {
+      "id": "11",
+      "title": "小米手环8 Pro",
+      "price": 150,
+      "originalPrice": 349,
+      "category": "数码电子",
+      "condition": "good",
+      "description": "使用半年，功能正常，电池续航约14天。",
+      "sellerId": 12,
+      "sellerName": "马同学",
+      "campus": "狮子山校区",
+      "publishTime": "2026-06-27 19:00",
+      "views": 98,
+      "likes": 14,
+      "image": "https://img14.360buyimg.com/n1/jfs/t1/215484/36/25349/132713/65214369F1d2a147e/5556566868888888.jpg",
+      "status": "open"
+    },
+    {
+      "id": "12",
+      "title": "罗技G502鼠标",
+      "price": 120,
+      "originalPrice": 399,
+      "category": "数码电子",
+      "condition": "good",
+      "description": "使用一年，按键灵敏，有线游戏鼠标。",
+      "sellerId": 13,
+      "sellerName": "朱同学",
+      "campus": "成龙校区",
+      "publishTime": "2026-06-26 17:30",
+      "views": 56,
+      "likes": 8,
+      "image": "https://ts1.tc.mm.bing.net/th/id/OIP-C.logitech-g502-mouse-image?rs=1&pid=ImgDetMain&o=7&rm=3",
+      "status": "open"
+    },
+    {
+      "id": "13",
+      "title": "考研政治徐涛核心考案",
+      "price": 30,
+      "originalPrice": 68,
+      "category": "图书教材",
+      "condition": "good",
+      "description": "2026考研政治核心考案，有少量笔记。",
+      "sellerId": 14,
+      "sellerName": "胡同学",
+      "campus": "狮子山校区",
+      "publishTime": "2026-06-29 11:00",
+      "views": 45,
+      "likes": 6,
+      "image": "https://img10.360buyimg.com/n1/jfs/t1/198763/24/26251/120530/647a2324F9a5b7c71/1234567890123456.jpg",
+      "status": "open"
+    },
+    {
+      "id": "14",
+      "title": "衣柜收纳盒套装",
+      "price": 45,
+      "originalPrice": 99,
+      "category": "家具家电",
+      "condition": "like-new",
+      "description": "6件套收纳盒，塑料材质，适合宿舍整理。",
+      "sellerId": 15,
+      "sellerName": "林同学",
+      "campus": "成龙校区",
+      "publishTime": "2026-06-28 10:15",
+      "views": 78,
+      "likes": 12,
+      "image": "https://img.alicdn.com/i1/2168598983/O1CN01Kt5z5H1z5H1z5H1z5_!!2168598983.jpg",
+      "status": "open"
+    },
+    {
+      "id": "15",
+      "title": "美的电饭煲",
+      "price": 60,
+      "originalPrice": 199,
+      "category": "家具家电",
+      "condition": "good",
+      "description": "3升容量，适合2-3人使用，功能正常。",
+      "sellerId": 16,
+      "sellerName": "何同学",
+      "campus": "狮子山校区",
+      "publishTime": "2026-06-25 14:00",
+      "views": 34,
+      "likes": 5,
+      "image": "https://ts3.tc.mm.bing.net/th/id/OIP-C.midea-rice-cooker-image?rs=1&pid=ImgDetMain&o=7&rm=3",
+      "status": "closed"
+    },
+    {
+      "id": "16",
+      "title": "羽绒服女款中长款",
+      "price": 150,
+      "originalPrice": 599,
+      "category": "服饰鞋包",
+      "condition": "good",
+      "description": "黑色中长款羽绒服，L码，90%白鸭绒，保暖性好。",
+      "sellerId": 17,
+      "sellerName": "郭同学",
+      "campus": "狮子山校区",
+      "publishTime": "2026-06-27 13:30",
+      "views": 89,
+      "likes": 18,
+      "image": "https://ts2.tc.mm.bing.net/th/id/OIP-C.women-down-jacket-image?rs=1&pid=ImgDetMain&o=7&rm=3",
+      "status": "open"
+    },
+    {
+      "id": "17",
+      "title": "篮球斯伯丁室外",
+      "price": 80,
+      "originalPrice": 199,
+      "category": "运动户外",
+      "condition": "good",
+      "description": "使用半年，手感好，适合室外篮球场。",
+      "sellerId": 18,
+      "sellerName": "罗同学",
+      "campus": "成龙校区",
+      "publishTime": "2026-06-26 16:45",
+      "views": 56,
+      "likes": 10,
+      "image": "https://ts1.tc.mm.bing.net/th/id/OIP-C.spalding-basketball-image?rs=1&pid=ImgDetMain&o=7&rm=3",
+      "status": "open"
+    },
+    {
+      "id": "18",
+      "title": "电热水壶",
+      "price": 35,
+      "originalPrice": 89,
+      "category": "家具家电",
+      "condition": "good",
+      "description": "1.5升容量，自动断电，烧水泡茶方便。",
+      "sellerId": 19,
+      "sellerName": "梁同学",
+      "campus": "狮子山校区",
+      "publishTime": "2026-06-29 08:30",
+      "views": 42,
+      "likes": 7,
+      "image": "https://ts4.tc.mm.bing.net/th/id/OIP-C.electric-kettle-image?rs=1&pid=ImgDetMain&o=7&rm=3",
+      "status": "open"
+    },
+    {
+      "id": "19",
+      "title": "考研数学张宇高数",
+      "price": 35,
+      "originalPrice": 78,
+      "category": "图书教材",
+      "condition": "good",
+      "description": "2026考研数学高数十八讲，有少量标注。",
+      "sellerId": 20,
+      "sellerName": "谢同学",
+      "campus": "成龙校区",
+      "publishTime": "2026-06-28 09:00",
+      "views": 67,
+      "likes": 9,
+      "image": "https://img12.360buyimg.com/n1/jfs/t1/206549/32/25633/118654/647a2324F8b5c7c72/1234567890123457.jpg",
+      "status": "open"
+    },
+    {
+      "id": "20",
+      "title": "Nike背包大容量",
+      "price": 120,
+      "originalPrice": 349,
+      "category": "服饰鞋包",
+      "condition": "like-new",
+      "description": "黑色大容量背包，适合旅行或上学使用。",
+      "sellerId": 21,
+      "sellerName": "韩同学",
+      "campus": "狮子山校区",
+      "publishTime": "2026-06-27 11:20",
+      "views": 78,
+      "likes": 15,
+      "image": "https://ts3.tc.mm.bing.net/th/id/OIP-C.nike-backpack-image?rs=1&pid=ImgDetMain&o=7&rm=3",
+      "status": "open"
     }
   ],
   "lostFounds": [
     {
-      "id": 1,
+      "id": "1",
       "title": "校园卡丢失",
       "type": "lost",
       "itemName": "校园卡",
@@ -153,7 +357,7 @@
       "status": "open"
     },
     {
-      "id": 2,
+      "id": "2",
       "title": "黑色钱包",
       "type": "found",
       "itemName": "钱包",
@@ -167,7 +371,7 @@
       "status": "open"
     },
     {
-      "id": 3,
+      "id": "3",
       "title": "华为Mate40 Pro手机",
       "type": "lost",
       "itemName": "手机",
@@ -181,7 +385,7 @@
       "status": "open"
     },
     {
-      "id": 4,
+      "id": "4",
       "title": "红色雨伞",
       "type": "found",
       "itemName": "雨伞",
@@ -195,7 +399,7 @@
       "status": "closed"
     },
     {
-      "id": 5,
+      "id": "5",
       "title": "机械键盘",
       "type": "lost",
       "itemName": "键盘",
@@ -211,7 +415,7 @@
   ],
   "groupBuys": [
     {
-      "id": 1,
+      "id": "1",
       "title": "瑞幸咖啡拼单",
       "price": 25,
       "originalPrice": 38,
@@ -226,7 +430,7 @@
       "status": "active"
     },
     {
-      "id": 2,
+      "id": "2",
       "title": "考研资料团购",
       "price": 89,
       "originalPrice": 158,
@@ -241,7 +445,7 @@
       "status": "active"
     },
     {
-      "id": 3,
+      "id": "3",
       "title": "健身房月卡拼团",
       "price": 150,
       "originalPrice": 299,
@@ -256,7 +460,7 @@
       "status": "active"
     },
     {
-      "id": 4,
+      "id": "4",
       "title": "水果拼单",
       "price": 30,
       "originalPrice": 50,
@@ -271,7 +475,7 @@
       "status": "completed"
     },
     {
-      "id": 5,
+      "id": "5",
       "title": "电影票团购",
       "price": 25,
       "originalPrice": 45,
@@ -286,9 +490,129 @@
       "status": "active"
     }
   ],
+  "favorites": [
+    {
+      "id": "2",
+      "userId": 1,
+      "tradeId": 6,
+      "createdAt": "2026-06-29 10:15"
+    },
+    {
+      "id": "3",
+      "userId": 1,
+      "tradeId": 10,
+      "createdAt": "2026-06-28 16:45"
+    },
+    {
+      "userId": 1,
+      "tradeId": "2",
+      "createdAt": "2026/6/30 16:02:21",
+      "id": "MBKI-p0p3b4"
+    },
+    {
+      "userId": 1,
+      "tradeId": "1",
+      "createdAt": "2026/6/30 16:02:31",
+      "id": "cTOYwLCG-ck"
+    }
+  ],
+  "conversations": [
+    {
+      "id": "1",
+      "userId": 1,
+      "sellerId": 2,
+      "sellerName": "李同学",
+      "sellerAvatar": "",
+      "tradeId": 1,
+      "tradeTitle": "Apple MacBook Air M2 13寸",
+      "lastMessage": "你好，这个电脑还在吗？",
+      "lastTime": "2026-06-29 14:30",
+      "unreadCount": 1
+    },
+    {
+      "id": "2",
+      "userId": 1,
+      "sellerId": 3,
+      "sellerName": "王同学",
+      "sellerAvatar": "",
+      "tradeId": 2,
+      "tradeTitle": "iPhone 14 Pro 256G 深空黑",
+      "lastMessage": "请问价格可以再优惠一点吗？",
+      "lastTime": "2026-06-29 12:00",
+      "unreadCount": 0
+    },
+    {
+      "id": "3",
+      "userId": 1,
+      "sellerId": 7,
+      "sellerName": "赵同学",
+      "sellerAvatar": "",
+      "tradeId": 6,
+      "tradeTitle": "AirPods Pro 2 代",
+      "lastMessage": "好的，明天下午见面交易",
+      "lastTime": "2026-06-28 20:00",
+      "unreadCount": 0
+    }
+  ],
+  "messages": [
+    {
+      "id": "1",
+      "conversationId": 1,
+      "senderId": 1,
+      "senderName": "橙同学",
+      "content": "你好，这个电脑还在吗？",
+      "timestamp": "2026-06-29 14:30",
+      "isRead": true
+    },
+    {
+      "id": "2",
+      "conversationId": 1,
+      "senderId": 2,
+      "senderName": "李同学",
+      "content": "还在的，请问你感兴趣吗？",
+      "timestamp": "2026-06-29 14:32",
+      "isRead": false
+    },
+    {
+      "id": "3",
+      "conversationId": 2,
+      "senderId": 1,
+      "senderName": "橙同学",
+      "content": "请问价格可以再优惠一点吗？",
+      "timestamp": "2026-06-29 12:00",
+      "isRead": true
+    },
+    {
+      "id": "4",
+      "conversationId": 2,
+      "senderId": 3,
+      "senderName": "王同学",
+      "content": "最低4000，不行就算了",
+      "timestamp": "2026-06-29 12:05",
+      "isRead": true
+    },
+    {
+      "id": "5",
+      "conversationId": 3,
+      "senderId": 7,
+      "senderName": "赵同学",
+      "content": "你好，AirPods还在",
+      "timestamp": "2026-06-28 19:30",
+      "isRead": true
+    },
+    {
+      "id": "6",
+      "conversationId": 3,
+      "senderId": 1,
+      "senderName": "橙同学",
+      "content": "好的，明天下午见面交易",
+      "timestamp": "2026-06-28 20:00",
+      "isRead": true
+    }
+  ],
   "errands": [
     {
-      "id": 1,
+      "id": "1",
       "title": "帮忙取快递",
       "reward": 10,
       "location": "菜鸟驿站",
@@ -303,7 +627,7 @@
       "takerId": null
     },
     {
-      "id": 2,
+      "id": "2",
       "title": "帮忙占座",
       "reward": 5,
       "location": "图书馆",
@@ -318,7 +642,7 @@
       "takerId": null
     },
     {
-      "id": 3,
+      "id": "3",
       "title": "帮忙打印资料",
       "reward": 8,
       "location": "打印店",
@@ -333,7 +657,7 @@
       "takerId": 23
     },
     {
-      "id": 4,
+      "id": "4",
       "title": "帮忙买奶茶",
       "reward": 6,
       "location": "蜜雪冰城",
@@ -348,7 +672,7 @@
       "takerId": null
     },
     {
-      "id": 5,
+      "id": "5",
       "title": "帮忙寄快递",
       "reward": 12,
       "location": "顺丰快递点",
@@ -362,5 +686,6 @@
       "status": "completed",
       "takerId": 26
     }
-  ]
+  ],
+  "$schema": "./node_modules/json-server/schema.json"
 }

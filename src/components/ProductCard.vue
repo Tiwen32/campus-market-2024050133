@@ -1,46 +1,89 @@
 <script setup lang="ts">
-import { useProductStore } from '@/stores/products'
-import type { Product } from '@/stores/products'
+import { ref, onMounted } from 'vue'
+import type { Trade } from '@/api/trade'
+import { getFavoriteByTradeId, addFavorite, removeFavorite, type Favorite } from '@/api/favorite'
 
-defineProps<{
-  product: Product
+const props = defineProps<{
+  product: Trade
 }>()
 
 const emit = defineEmits<{
-  view: [product: Product]
+  view: [product: Trade]
 }>()
 
-const productStore = useProductStore()
+const isLiked = ref(false)
+const favoriteId = ref<number | null>(null)
+const likes = ref(props.product.likes)
 
-const conditionText = {
+const conditionText: Record<string, string> = {
   'new': '全新',
   'like-new': '几乎全新',
   'good': '成色良好',
   'fair': '有使用痕迹',
 }
 
-const conditionColor = {
+const conditionColor: Record<string, string> = {
   'new': '#00b894',
   'like-new': '#0984e3',
   'good': '#fdcb6e',
   'fair': '#e17055',
 }
 
-const handleLike = (e: Event, productId: string) => {
-  e.stopPropagation()
-  productStore.toggleLike(productId)
+const checkFavoriteStatus = async () => {
+  try {
+    const response = await getFavoriteByTradeId(1, props.product.id)
+    if (response.data.length > 0) {
+      isLiked.value = true
+      favoriteId.value = response.data[0].id
+    }
+  } catch (error) {
+    console.error('检查收藏状态失败:', error)
+  }
 }
 
-const handleView = (product: Product) => {
-  emit('view', product)
+const handleLike = async (e: Event) => {
+  e.stopPropagation()
+  if (isLiked.value) {
+    if (favoriteId.value) {
+      try {
+        await removeFavorite(favoriteId.value)
+        isLiked.value = false
+        favoriteId.value = null
+        likes.value--
+      } catch (error) {
+        console.error('取消收藏失败:', error)
+      }
+    }
+  } else {
+    try {
+      const response = await addFavorite({
+        userId: 1,
+        tradeId: props.product.id,
+        createdAt: new Date().toLocaleString('zh-CN'),
+      })
+      isLiked.value = true
+      favoriteId.value = response.data.id
+      likes.value++
+    } catch (error) {
+      console.error('添加收藏失败:', error)
+    }
+  }
 }
+
+const handleView = () => {
+  emit('view', props.product)
+}
+
+onMounted(() => {
+  checkFavoriteStatus()
+})
 </script>
 
 <template>
-  <div class="product-card" @click="handleView(product)">
+  <div class="product-card" @click="handleView">
     <div class="product-image">
       <img :src="product.image" :alt="product.title" />
-      <span v-if="product.isSold" class="sold-badge">已售出</span>
+      <span v-if="product.status === 'closed'" class="sold-badge">已售出</span>
     </div>
     <div class="product-info">
       <h3 class="product-title">{{ product.title }}</h3>
@@ -57,9 +100,9 @@ const handleView = (product: Product) => {
           <span v-if="product.originalPrice" class="original-price">¥{{ product.originalPrice }}</span>
         </div>
         <div class="actions">
-          <button class="like-btn" :class="{ liked: product.isLiked }" @click="handleLike($event, product.id)">
-            <span>{{ product.isLiked ? '❤️' : '🤍' }}</span>
-            <span>{{ product.likes }}</span>
+          <button class="like-btn" :class="{ liked: isLiked }" @click="handleLike($event)">
+            <span>{{ isLiked ? '❤️' : '🤍' }}</span>
+            <span>{{ likes }}</span>
           </button>
         </div>
       </div>

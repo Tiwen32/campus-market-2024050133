@@ -1,10 +1,12 @@
 <script setup lang="ts">
-import { useProductStore } from '@/stores/products'
+import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import type { Product } from '@/stores/products'
+import type { Trade } from '@/api/trade'
+import { getFavoriteByTradeId, addFavorite, removeFavorite } from '@/api/favorite'
+import { createConversation } from '@/api/chat'
 
 const props = defineProps<{
-  product: Product
+  product: Trade
   visible: boolean
 }>()
 
@@ -12,33 +14,85 @@ const emit = defineEmits<{
   close: []
 }>()
 
-const productStore = useProductStore()
 const router = useRouter()
+const isLiked = ref(false)
+const favoriteId = ref<number | null>(null)
+const likes = ref(props.product.likes)
 
-const conditionText = {
+const conditionText: Record<string, string> = {
   'new': '全新',
   'like-new': '几乎全新',
   'good': '成色良好',
   'fair': '有使用痕迹',
 }
 
-const conditionColor = {
+const conditionColor: Record<string, string> = {
   'new': '#00b894',
   'like-new': '#0984e3',
   'good': '#fdcb6e',
   'fair': '#e17055',
 }
 
-const handleLike = () => {
-  productStore.toggleLike(props.product.id)
+const checkFavoriteStatus = async () => {
+  try {
+    const response = await getFavoriteByTradeId(1, props.product.id)
+    if (response.data.length > 0) {
+      isLiked.value = true
+      favoriteId.value = response.data[0].id
+    }
+  } catch (error) {
+    console.error('检查收藏状态失败:', error)
+  }
+}
+
+const handleLike = async () => {
+  if (isLiked.value) {
+    if (favoriteId.value) {
+      try {
+        await removeFavorite(favoriteId.value)
+        isLiked.value = false
+        favoriteId.value = null
+        likes.value--
+      } catch (error) {
+        console.error('取消收藏失败:', error)
+      }
+    }
+  } else {
+    try {
+      const response = await addFavorite({
+        userId: 1,
+        tradeId: props.product.id,
+        createdAt: new Date().toLocaleString('zh-CN'),
+      })
+      isLiked.value = true
+      favoriteId.value = response.data.id
+      likes.value++
+    } catch (error) {
+      console.error('添加收藏失败:', error)
+    }
+  }
 }
 
 const handleAddToCart = () => {
-  productStore.addToCart(props.product)
   alert('已加入购物车')
 }
 
-const handleContactSeller = () => {
+const handleContactSeller = async () => {
+  try {
+    await createConversation({
+      userId: 1,
+      sellerId: props.product.sellerId,
+      sellerName: props.product.sellerName,
+      sellerAvatar: '',
+      tradeId: props.product.id,
+      tradeTitle: props.product.title,
+      lastMessage: '',
+      lastTime: new Date().toLocaleString('zh-CN'),
+      unreadCount: 0,
+    })
+  } catch (error) {
+    console.error('创建对话失败:', error)
+  }
   emit('close')
   router.push('/message')
 }
@@ -46,6 +100,10 @@ const handleContactSeller = () => {
 const handleClose = () => {
   emit('close')
 }
+
+onMounted(() => {
+  checkFavoriteStatus()
+})
 </script>
 
 <template>
@@ -74,7 +132,7 @@ const handleClose = () => {
             </div>
             <div class="stats">
               <span>👁️ {{ product.views }} 浏览</span>
-              <span>❤️ {{ product.likes }} 喜欢</span>
+              <span>❤️ {{ likes }} 喜欢</span>
             </div>
           </div>
         </div>
@@ -96,7 +154,7 @@ const handleClose = () => {
 
         <div class="detail-footer">
           <button class="btn-secondary" @click="handleLike">
-            {{ product.isLiked ? '❤️ 已喜欢' : '🤍 喜欢' }}
+            {{ isLiked ? '❤️ 已喜欢' : '🤍 喜欢' }}
           </button>
           <button class="btn-primary" @click="handleAddToCart">
             加入购物车
