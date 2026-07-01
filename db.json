@@ -514,6 +514,12 @@
       "tradeId": "1",
       "createdAt": "2026/6/30 16:02:31",
       "id": "cTOYwLCG-ck"
+    },
+    {
+      "userId": 1,
+      "tradeId": "2",
+      "createdAt": "2026/7/1 09:12:18",
+      "id": "0FKoc-AHRKs"
     }
   ],
   "conversations": [

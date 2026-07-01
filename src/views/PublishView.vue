@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { useProductStore } from '@/stores/products'
 import ImageUploader from '@/components/ImageUploader.vue'
+import { createTrade } from '@/api/trade'
+import { createLostFound } from '@/api/lostFound'
+import { createGroupBuy } from '@/api/groupBuy'
+import { createErrand } from '@/api/errand'
 
 const router = useRouter()
-const productStore = useProductStore()
 
 const publishType = ref<'trade' | 'lost' | 'group-buy' | 'errand'>('trade')
 const images = ref<string[]>([])
@@ -20,6 +22,8 @@ const deadline = ref('')
 const minPeople = ref('')
 const reward = ref('')
 const destination = ref('')
+const lostType = ref<'lost' | 'found'>('lost')
+const itemName = ref('')
 
 const tradeCategories = ['数码电子', '运动户外', '图书教材', '家具家电', '服饰鞋包', '其他']
 
@@ -30,57 +34,152 @@ const conditions = [
   { value: 'fair', label: '有使用痕迹' },
 ]
 
+const errors = ref<Record<string, string>>({})
+
 const handleImageUpdate = (newImages: string[]) => {
   images.value = newImages
 }
 
-const handleSubmit = () => {
-  if (!title.value || !description.value) {
-    alert('请填写标题和描述')
-    return
+const validateForm = (): boolean => {
+  errors.value = {}
+
+  if (!title.value.trim()) {
+    errors.value.title = '请输入标题'
+  }
+
+  if (!description.value.trim()) {
+    errors.value.description = '请输入描述'
   }
 
   if (publishType.value === 'trade') {
-    if (!price.value) {
-      alert('请填写价格')
-      return
+    if (!price.value.trim()) {
+      errors.value.price = '请输入价格'
+    } else if (Number(price.value) <= 0) {
+      errors.value.price = '价格必须大于0'
     }
-
-    const product = {
-      id: Date.now().toString(),
-      title: title.value,
-      price: Number(price.value),
-      originalPrice: originalPrice.value ? Number(originalPrice.value) : undefined,
-      image: images.value[0] || 'https://images.unsplash.com/photo-1544717302-de293b95efc6?w=400&h=400&fit=crop',
-      category: category.value || '其他',
-      condition: condition.value,
-      description: description.value,
-      sellerId: '1',
-      sellerName: '橙同学',
-      sellerAvatar: '',
-      campus: '成龙校区',
-      publishTime: '刚刚',
-      views: 0,
-      likes: 0,
-      isLiked: false,
-      isSold: false,
+    if (!category.value) {
+      errors.value.category = '请选择分类'
     }
-
-    productStore.addProduct(product)
   } else if (publishType.value === 'errand') {
-    if (!reward.value) {
-      alert('请填写悬赏金额')
-      return
+    if (!reward.value.trim()) {
+      errors.value.reward = '请输入悬赏金额'
+    } else if (Number(reward.value) <= 0) {
+      errors.value.reward = '悬赏金额必须大于0'
+    }
+    if (!location.value.trim()) {
+      errors.value.location = '请输入起点位置'
+    }
+    if (!destination.value.trim()) {
+      errors.value.destination = '请输入终点位置'
     }
   } else if (publishType.value === 'group-buy') {
-    if (!price.value) {
-      alert('请填写拼单价')
-      return
+    if (!price.value.trim()) {
+      errors.value.price = '请输入拼单价'
+    } else if (Number(price.value) <= 0) {
+      errors.value.price = '拼单价必须大于0'
+    }
+    if (!minPeople.value.trim()) {
+      errors.value.minPeople = '请输入成团人数'
+    } else if (Number(minPeople.value) <= 0) {
+      errors.value.minPeople = '成团人数必须大于0'
+    }
+    if (!deadline.value) {
+      errors.value.deadline = '请选择截止时间'
+    }
+  } else if (publishType.value === 'lost') {
+    if (!itemName.value.trim()) {
+      errors.value.itemName = '请输入物品名称'
+    }
+    if (!location.value.trim()) {
+      errors.value.location = '请输入位置'
+    }
+    if (!deadline.value) {
+      errors.value.time = '请选择时间'
     }
   }
 
-  alert('发布成功！')
-  router.push('/')
+  return Object.keys(errors.value).length === 0
+}
+
+const handleSubmit = async () => {
+  if (!validateForm()) {
+    return
+  }
+
+  const currentTime = new Date().toLocaleString('zh-CN')
+  const defaultImage = 'https://images.unsplash.com/photo-1544717302-de293b95efc6?w=400&h=400&fit=crop'
+
+  try {
+    if (publishType.value === 'trade') {
+      await createTrade({
+        title: title.value.trim(),
+        price: Number(price.value),
+        originalPrice: originalPrice.value ? Number(originalPrice.value) : 0,
+        category: category.value || '其他',
+        condition: condition.value,
+        description: description.value.trim(),
+        sellerId: 1,
+        sellerName: '橙同学',
+        campus: '成龙校区',
+        publishTime: currentTime,
+        views: 0,
+        likes: 0,
+        image: images.value[0] || defaultImage,
+        status: 'open',
+      })
+      router.push('/trade')
+    } else if (publishType.value === 'errand') {
+      await createErrand({
+        title: title.value.trim(),
+        reward: Number(reward.value),
+        location: location.value.trim(),
+        destination: destination.value.trim(),
+        description: description.value.trim(),
+        requesterId: 1,
+        requesterName: '橙同学',
+        phone: '138****8888',
+        time: deadline.value || currentTime,
+        image: images.value[0] || defaultImage,
+        status: 'pending',
+        takerId: null,
+      })
+      router.push('/errand')
+    } else if (publishType.value === 'group-buy') {
+      await createGroupBuy({
+        title: title.value.trim(),
+        price: Number(price.value),
+        originalPrice: originalPrice.value ? Number(originalPrice.value) : 0,
+        minPeople: Number(minPeople.value),
+        currentPeople: 1,
+        deadline: deadline.value || currentTime,
+        description: description.value.trim(),
+        organizerId: 1,
+        organizerName: '橙同学',
+        campus: '成龙校区',
+        image: images.value[0] || defaultImage,
+        status: 'active',
+      })
+      router.push('/group-buy')
+    } else if (publishType.value === 'lost') {
+      await createLostFound({
+        title: title.value.trim(),
+        type: lostType.value,
+        itemName: itemName.value.trim(),
+        location: location.value.trim(),
+        time: deadline.value || currentTime,
+        description: description.value.trim(),
+        publisherId: 1,
+        publisherName: '橙同学',
+        phone: '138****8888',
+        image: images.value[0] || defaultImage,
+        status: 'open',
+      })
+      router.push('/lost-found')
+    }
+  } catch (error) {
+    console.error('发布失败:', error)
+    alert('发布失败，请检查Mock服务是否启动')
+  }
 }
 </script>
 
@@ -132,8 +231,10 @@ const handleSubmit = () => {
             v-model="title"
             type="text"
             class="form-input"
+            :class="{ error: errors.title }"
             placeholder="请输入标题"
           />
+          <span v-if="errors.title" class="form-error">{{ errors.title }}</span>
         </div>
 
         <div class="form-item">
@@ -141,9 +242,11 @@ const handleSubmit = () => {
           <textarea
             v-model="description"
             class="form-textarea"
+            :class="{ error: errors.description }"
             rows="4"
             placeholder="请详细描述信息"
           ></textarea>
+          <span v-if="errors.description" class="form-error">{{ errors.description }}</span>
         </div>
 
         <div class="form-item">
@@ -158,7 +261,7 @@ const handleSubmit = () => {
         <div class="form-row">
           <div class="form-item">
             <label class="form-label">价格 <span class="required">*</span></label>
-            <div class="input-group">
+            <div class="input-group" :class="{ error: errors.price }">
               <span class="input-prefix">¥</span>
               <input
                 v-model="price"
@@ -167,6 +270,7 @@ const handleSubmit = () => {
                 placeholder="0.00"
               />
             </div>
+            <span v-if="errors.price" class="form-error">{{ errors.price }}</span>
           </div>
           <div class="form-item">
             <label class="form-label">原价</label>
@@ -184,13 +288,14 @@ const handleSubmit = () => {
 
         <div class="form-row">
           <div class="form-item">
-            <label class="form-label">分类</label>
-            <select v-model="category" class="form-select">
+            <label class="form-label">分类 <span class="required">*</span></label>
+            <select v-model="category" class="form-select" :class="{ error: errors.category }">
               <option value="">请选择分类</option>
               <option v-for="cat in tradeCategories" :key="cat" :value="cat">
                 {{ cat }}
               </option>
             </select>
+            <span v-if="errors.category" class="form-error">{{ errors.category }}</span>
           </div>
           <div class="form-item">
             <label class="form-label">成色</label>
@@ -209,7 +314,7 @@ const handleSubmit = () => {
         <div class="form-row">
           <div class="form-item">
             <label class="form-label">拼单价 <span class="required">*</span></label>
-            <div class="input-group">
+            <div class="input-group" :class="{ error: errors.price }">
               <span class="input-prefix">¥</span>
               <input
                 v-model="price"
@@ -218,6 +323,7 @@ const handleSubmit = () => {
                 placeholder="0.00"
               />
             </div>
+            <span v-if="errors.price" class="form-error">{{ errors.price }}</span>
           </div>
           <div class="form-item">
             <label class="form-label">原价</label>
@@ -235,21 +341,25 @@ const handleSubmit = () => {
 
         <div class="form-row">
           <div class="form-item">
-            <label class="form-label">成团人数</label>
+            <label class="form-label">成团人数 <span class="required">*</span></label>
             <input
               v-model="minPeople"
               type="number"
               class="form-input"
+              :class="{ error: errors.minPeople }"
               placeholder="最少几人成团"
             />
+            <span v-if="errors.minPeople" class="form-error">{{ errors.minPeople }}</span>
           </div>
           <div class="form-item">
-            <label class="form-label">截止时间</label>
+            <label class="form-label">截止时间 <span class="required">*</span></label>
             <input
               v-model="deadline"
               type="datetime-local"
               class="form-input"
+              :class="{ error: errors.deadline }"
             />
+            <span v-if="errors.deadline" class="form-error">{{ errors.deadline }}</span>
           </div>
         </div>
       </div>
@@ -259,7 +369,7 @@ const handleSubmit = () => {
 
         <div class="form-item">
           <label class="form-label">悬赏金额 <span class="required">*</span></label>
-          <div class="input-group">
+          <div class="input-group" :class="{ error: errors.reward }">
             <span class="input-prefix">¥</span>
             <input
               v-model="reward"
@@ -268,26 +378,31 @@ const handleSubmit = () => {
               placeholder="0.00"
             />
           </div>
+          <span v-if="errors.reward" class="form-error">{{ errors.reward }}</span>
         </div>
 
         <div class="form-item">
-          <label class="form-label">起点位置</label>
+          <label class="form-label">起点位置 <span class="required">*</span></label>
           <input
             v-model="location"
             type="text"
             class="form-input"
+            :class="{ error: errors.location }"
             placeholder="任务起点"
           />
+          <span v-if="errors.location" class="form-error">{{ errors.location }}</span>
         </div>
 
         <div class="form-item">
-          <label class="form-label">终点位置</label>
+          <label class="form-label">终点位置 <span class="required">*</span></label>
           <input
             v-model="destination"
             type="text"
             class="form-input"
+            :class="{ error: errors.destination }"
             placeholder="任务终点"
           />
+          <span v-if="errors.destination" class="form-error">{{ errors.destination }}</span>
         </div>
 
         <div class="form-item">
@@ -304,22 +419,56 @@ const handleSubmit = () => {
         <h3>失物信息</h3>
 
         <div class="form-item">
-          <label class="form-label">位置</label>
+          <label class="form-label">类型 <span class="required">*</span></label>
+          <div class="type-options">
+            <button
+              :class="['type-option', { active: lostType === 'lost' }]"
+              @click="lostType = 'lost'"
+            >
+              我丢了
+            </button>
+            <button
+              :class="['type-option', { active: lostType === 'found' }]"
+              @click="lostType = 'found'"
+            >
+              我捡到
+            </button>
+          </div>
+        </div>
+
+        <div class="form-item">
+          <label class="form-label">物品名称 <span class="required">*</span></label>
+          <input
+            v-model="itemName"
+            type="text"
+            class="form-input"
+            :class="{ error: errors.itemName }"
+            placeholder="请输入物品名称"
+          />
+          <span v-if="errors.itemName" class="form-error">{{ errors.itemName }}</span>
+        </div>
+
+        <div class="form-item">
+          <label class="form-label">位置 <span class="required">*</span></label>
           <input
             v-model="location"
             type="text"
             class="form-input"
+            :class="{ error: errors.location }"
             placeholder="丢失或捡拾位置"
           />
+          <span v-if="errors.location" class="form-error">{{ errors.location }}</span>
         </div>
 
         <div class="form-item">
-          <label class="form-label">时间</label>
+          <label class="form-label">时间 <span class="required">*</span></label>
           <input
             v-model="deadline"
             type="datetime-local"
             class="form-input"
+            :class="{ error: errors.time }"
           />
+          <span v-if="errors.time" class="form-error">{{ errors.time }}</span>
         </div>
       </div>
 
@@ -522,6 +671,45 @@ const handleSubmit = () => {
 
 .btn-submit:hover {
   background: var(--dark-orange);
+}
+
+.form-input.error,
+.form-textarea.error,
+.form-select.error {
+  border-color: #e17055;
+}
+
+.input-group.error {
+  border-color: #e17055;
+}
+
+.form-error {
+  display: block;
+  font-size: 12px;
+  color: #e17055;
+  margin-top: 4px;
+}
+
+.type-options {
+  display: flex;
+  gap: 12px;
+}
+
+.type-option {
+  flex: 1;
+  padding: 12px;
+  background: #f5f5f5;
+  border: 2px solid transparent;
+  border-radius: 10px;
+  font-size: 15px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.type-option.active {
+  background: var(--primary-orange);
+  border-color: var(--primary-orange);
+  color: white;
 }
 
 @media (max-width: 600px) {
