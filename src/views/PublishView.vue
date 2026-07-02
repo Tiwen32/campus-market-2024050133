@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { useUserStore } from '@/stores/user'
 import ImageUploader from '@/components/ImageUploader.vue'
 import { createTrade } from '@/api/trade'
 import { createLostFound } from '@/api/lostFound'
@@ -8,6 +9,7 @@ import { createGroupBuy } from '@/api/groupBuy'
 import { createErrand } from '@/api/errand'
 
 const router = useRouter()
+const userStore = useUserStore()
 
 const publishType = ref<'trade' | 'lost' | 'group-buy' | 'errand'>('trade')
 const images = ref<string[]>([])
@@ -110,6 +112,11 @@ const handleSubmit = async () => {
   const defaultImage = 'https://images.unsplash.com/photo-1544717302-de293b95efc6?w=400&h=400&fit=crop'
 
   try {
+    const userId = Number(userStore.currentUser.id)
+    const userName = userStore.currentUser.name
+    const userPhone = userStore.currentUser.phone
+    const userCampus = userStore.currentUser.campus
+
     if (publishType.value === 'trade') {
       await createTrade({
         title: title.value.trim(),
@@ -118,9 +125,9 @@ const handleSubmit = async () => {
         category: category.value || '其他',
         condition: condition.value,
         description: description.value.trim(),
-        sellerId: 1,
-        sellerName: '橙同学',
-        campus: '成龙校区',
+        sellerId: userId,
+        sellerName: userName,
+        campus: userCampus,
         publishTime: currentTime,
         views: 0,
         likes: 0,
@@ -135,9 +142,9 @@ const handleSubmit = async () => {
         location: location.value.trim(),
         destination: destination.value.trim(),
         description: description.value.trim(),
-        requesterId: 1,
-        requesterName: '橙同学',
-        phone: '138****8888',
+        requesterId: userId,
+        requesterName: userName,
+        phone: userPhone,
         time: deadline.value || currentTime,
         image: images.value[0] || defaultImage,
         status: 'pending',
@@ -153,9 +160,9 @@ const handleSubmit = async () => {
         currentPeople: 1,
         deadline: deadline.value || currentTime,
         description: description.value.trim(),
-        organizerId: 1,
-        organizerName: '橙同学',
-        campus: '成龙校区',
+        organizerId: userId,
+        organizerName: userName,
+        campus: userCampus,
         image: images.value[0] || defaultImage,
         status: 'active',
       })
@@ -168,9 +175,9 @@ const handleSubmit = async () => {
         location: location.value.trim(),
         time: deadline.value || currentTime,
         description: description.value.trim(),
-        publisherId: 1,
-        publisherName: '橙同学',
-        phone: '138****8888',
+        publisherId: userId,
+        publisherName: userName,
+        phone: userPhone,
         image: images.value[0] || defaultImage,
         status: 'open',
       })

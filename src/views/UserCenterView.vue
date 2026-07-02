@@ -2,27 +2,53 @@
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user'
+import { useFavoriteStore } from '@/stores/favorite'
 import { useProductStore } from '@/stores/products'
-import { mockProducts } from '@/api/mockData'
-import type { Product } from '@/stores/products'
+import { getTrades, type Trade } from '@/api/trade'
+import { getLostFounds, type LostFound } from '@/api/lostFound'
+import { getGroupBuys, type GroupBuy } from '@/api/groupBuy'
+import { getErrands, type Errand } from '@/api/errand'
 
 const router = useRouter()
 const userStore = useUserStore()
+const favoriteStore = useFavoriteStore()
 const productStore = useProductStore()
 
 const activeTab = ref<'profile' | 'my-publish' | 'favorites' | 'cart'>('profile')
 const showDetail = ref(false)
-const selectedProduct = ref<Product | null>(null)
+const selectedProduct = ref<Trade | LostFound | GroupBuy | Errand | null>(null)
 
 const userStats = ref({
-  publishCount: 3,
+  publishCount: 0,
   tradeCount: 12,
   rating: 4.9,
 })
 
-const myProducts = ref<Product[]>([])
+const myTrades = ref<Trade[]>([])
+const myLostFounds = ref<LostFound[]>([])
+const myGroupBuys = ref<GroupBuy[]>([])
+const myErrands = ref<Errand[]>([])
 
-const handleProductView = (product: Product) => {
+const fetchMyPublish = async () => {
+  const userId = Number(userStore.currentUser.id)
+  try {
+    const [tradeRes, lostRes, groupRes, errandRes] = await Promise.all([
+      getTrades(),
+      getLostFounds(),
+      getGroupBuys(),
+      getErrands(),
+    ])
+    myTrades.value = tradeRes.data.filter(t => t.sellerId === userId)
+    myLostFounds.value = lostRes.data.filter(l => l.publisherId === userId)
+    myGroupBuys.value = groupRes.data.filter(g => g.organizerId === userId)
+    myErrands.value = errandRes.data.filter(e => e.requesterId === userId)
+    userStats.value.publishCount = myTrades.value.length + myLostFounds.value.length + myGroupBuys.value.length + myErrands.value.length
+  } catch (error) {
+    console.error('获取我的发布失败:', error)
+  }
+}
+
+const handleProductView = (product: Trade | LostFound | GroupBuy | Errand) => {
   selectedProduct.value = product
   showDetail.value = true
 }
@@ -31,8 +57,11 @@ const handleCloseDetail = () => {
   showDetail.value = false
 }
 
-const handleLike = (productId: string) => {
-  productStore.toggleLike(productId)
+const handleLike = (itemId: string | number, type: 'trade' | 'lostFound' | 'groupBuy' | 'errand') => {
+  const item = favoriteStore.favorites.find(f => f.id === String(itemId) && f.type === type)?.item
+  if (item) {
+    favoriteStore.toggleFavorite(item, type)
+  }
 }
 
 const removeFromCart = (productId: string) => {
@@ -44,12 +73,7 @@ const navigateTo = (path: string) => {
 }
 
 onMounted(() => {
-  if (productStore.products.length === 0) {
-    mockProducts.forEach(product => {
-      productStore.addProduct(product)
-    })
-  }
-  myProducts.value = productStore.products.slice(0, 3)
+  fetchMyPublish()
 })
 </script>
 
@@ -103,8 +127,8 @@ onMounted(() => {
       >
         <span>❤️</span>
         <span>我的收藏</span>
-        <span v-if="productStore.favorites.length > 0" class="badge">
-          {{ productStore.favorites.length }}
+        <span v-if="favoriteStore.favoriteCount > 0" class="badge">
+          {{ favoriteStore.favoriteCount }}
         </span>
       </button>
       <button
@@ -141,16 +165,16 @@ onMounted(() => {
 
       <div class="recent-activity">
         <h3 class="section-title">最近发布</h3>
-        <div v-if="myProducts.length > 0" class="products-grid">
+        <div v-if="myTrades.length > 0" class="products-grid">
           <div
-            v-for="product in myProducts"
+            v-for="product in myTrades.slice(0, 6)"
             :key="product.id"
             class="mini-product-card"
             @click="handleProductView(product)"
           >
             <div class="mini-image">
               <img :src="product.image" :alt="product.title" />
-              <span v-if="product.isSold" class="sold-tag">已售</span>
+              <span v-if="product.status === 'closed'" class="sold-tag">已售</span>
             </div>
             <div class="mini-info">
               <p class="mini-title">{{ product.title }}</p>
@@ -167,9 +191,9 @@ onMounted(() => {
     </div>
 
     <div v-if="activeTab === 'my-publish'" class="content-section">
-      <div v-if="myProducts.length > 0" class="products-list">
+      <div v-if="myTrades.length > 0" class="products-list">
         <div
-          v-for="product in myProducts"
+          v-for="product in myTrades"
           :key="product.id"
           class="publish-item"
         >
@@ -181,7 +205,7 @@ onMounted(() => {
             <p class="publish-desc">{{ product.description.slice(0, 30) }}...</p>
             <div class="publish-meta">
               <span class="publish-price">¥{{ product.price }}</span>
-              <span class="publish-status">{{ product.isSold ? '已售出' : '在售' }}</span>
+              <span class="publish-status">{{ product.status === 'closed' ? '已售出' : '在售' }}</span>
               <span class="publish-time">{{ product.publishTime }}</span>
             </div>
           </div>
@@ -191,7 +215,79 @@ onMounted(() => {
           </div>
         </div>
       </div>
-      <div v-else class="empty-section">
+      <div v-if="myLostFounds.length > 0" class="products-list">
+        <div
+          v-for="item in myLostFounds"
+          :key="item.id"
+          class="publish-item"
+        >
+          <div class="publish-image" @click="handleProductView(item)">
+            <img :src="item.image" :alt="item.title" />
+          </div>
+          <div class="publish-info">
+            <h4 class="publish-title">{{ item.title }}</h4>
+            <p class="publish-desc">{{ item.description.slice(0, 30) }}...</p>
+            <div class="publish-meta">
+              <span class="publish-price">{{ item.type === 'lost' ? '寻物' : '招领' }}</span>
+              <span class="publish-status">{{ item.status === 'closed' ? '已解决' : '进行中' }}</span>
+              <span class="publish-time">{{ item.time }}</span>
+            </div>
+          </div>
+          <div class="publish-actions">
+            <button class="action-btn edit">编辑</button>
+            <button class="action-btn delete">删除</button>
+          </div>
+        </div>
+      </div>
+      <div v-if="myGroupBuys.length > 0" class="products-list">
+        <div
+          v-for="item in myGroupBuys"
+          :key="item.id"
+          class="publish-item"
+        >
+          <div class="publish-image" @click="handleProductView(item)">
+            <img :src="item.image" :alt="item.title" />
+          </div>
+          <div class="publish-info">
+            <h4 class="publish-title">{{ item.title }}</h4>
+            <p class="publish-desc">{{ item.description.slice(0, 30) }}...</p>
+            <div class="publish-meta">
+              <span class="publish-price">¥{{ item.price }}</span>
+              <span class="publish-status">{{ item.status === 'completed' ? '已完成' : (item.status === 'failed' ? '已失败' : '进行中') }}</span>
+              <span class="publish-time">{{ item.deadline }}</span>
+            </div>
+          </div>
+          <div class="publish-actions">
+            <button class="action-btn edit">编辑</button>
+            <button class="action-btn delete">删除</button>
+          </div>
+        </div>
+      </div>
+      <div v-if="myErrands.length > 0" class="products-list">
+        <div
+          v-for="item in myErrands"
+          :key="item.id"
+          class="publish-item"
+        >
+          <div class="publish-image" @click="handleProductView(item)">
+            <img :src="item.image" :alt="item.title" />
+          </div>
+          <div class="publish-info">
+            <h4 class="publish-title">{{ item.title }}</h4>
+            <p class="publish-desc">{{ item.description.slice(0, 30) }}...</p>
+            <div class="publish-meta">
+              <span class="publish-price">¥{{ item.reward }}</span>
+              <span class="publish-status">{{ item.status === 'completed' ? '已完成' : (item.status === 'inProgress' ? '进行中' : '待接单') }}</span>
+              <span class="publish-time">{{ item.time }}</span>
+            </div>
+          </div>
+          <div class="publish-actions">
+            <button class="action-btn edit">编辑</button>
+            <button class="action-btn delete">删除</button>
+          </div>
+        </div>
+      </div>
+      <div v-if="myTrades.length === 0 && myLostFounds.length === 0 && myGroupBuys.length === 0 && myErrands.length === 0" class="empty-section">
         <span class="empty-icon">📦</span>
         <p>暂无发布内容</p>
         <button class="empty-btn" @click="navigateTo('/publish')">去发布</button>
@@ -199,26 +295,25 @@ onMounted(() => {
     </div>
 
     <div v-if="activeTab === 'favorites'" class="content-section">
-      <div v-if="productStore.favoriteProducts.length > 0" class="products-grid">
+      <div v-if="favoriteStore.tradeFavorites.length > 0" class="products-grid">
         <div
-          v-for="product in productStore.favoriteProducts"
-          :key="product.id"
+          v-for="item in favoriteStore.tradeFavorites"
+          :key="item.id"
           class="favorite-card"
         >
-          <div class="card-image" @click="handleProductView(product)">
-            <img :src="product.image" :alt="product.title" />
+          <div class="card-image" @click="handleProductView(item)">
+            <img :src="item.image" :alt="item.title" />
           </div>
           <div class="card-info">
-            <h4 class="card-title">{{ product.title }}</h4>
-            <p class="card-price">¥{{ product.price }}</p>
-            <p class="card-seller">{{ product.sellerName }}</p>
+            <h4 class="card-title">{{ item.title }}</h4>
+            <p class="card-price">¥{{ item.price }}</p>
+            <p class="card-seller">{{ item.sellerName }}</p>
           </div>
           <button
             class="unlike-btn"
-            :class="{ liked: product.isLiked }"
-            @click="handleLike(product.id)"
+            @click="handleLike(item.id, 'trade')"
           >
-            {{ product.isLiked ? '❤️' : '🤍' }}
+            ❤️
           </button>
         </div>
       </div>
@@ -269,7 +364,7 @@ onMounted(() => {
       <div v-if="showDetail && selectedProduct" class="modal-overlay" @click="handleCloseDetail">
         <div class="modal-content" @click.stop>
           <button class="close-btn" @click="handleCloseDetail">✕</button>
-          
+
           <div class="detail-header">
             <div class="detail-image">
               <img :src="selectedProduct.image" :alt="selectedProduct.title" />
@@ -998,44 +1093,44 @@ onMounted(() => {
     flex-direction: column;
     text-align: center;
   }
-  
+
   .quick-actions {
     grid-template-columns: repeat(2, 1fr);
   }
-  
+
   .products-grid {
     grid-template-columns: repeat(2, 1fr);
   }
-  
+
   .publish-item {
     flex-direction: column;
   }
-  
+
   .publish-image {
     width: 100%;
     height: 180px;
   }
-  
+
   .favorite-card,
   .cart-item {
     flex-direction: column;
   }
-  
+
   .card-image,
   .cart-image {
     width: 100%;
     height: 150px;
   }
-  
+
   .detail-header {
     flex-direction: column;
   }
-  
+
   .detail-image {
     width: 100%;
     height: 200px;
   }
-  
+
   .detail-footer {
     flex-direction: column;
   }

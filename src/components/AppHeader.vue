@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
+import { useUserStore } from '@/stores/user'
 import AppNav from './AppNav.vue'
 
 const router = useRouter()
 const route = useRoute()
+const userStore = useUserStore()
 const isMenuOpen = ref(false)
 
 const showNav = computed(() => {
@@ -19,6 +21,11 @@ const goHome = () => {
   router.push('/')
   isMenuOpen.value = false
 }
+
+const goToUserCenter = () => {
+  router.push('/user')
+  isMenuOpen.value = false
+}
 </script>
 
 <template>
@@ -28,14 +35,20 @@ const goHome = () => {
         <span class="logo-icon">橙</span>
         <span class="logo-text">校园集市</span>
       </div>
-      
+
       <AppNav />
-      
-      <button class="menu-btn" @click="toggleMenu">
-        <span :class="['hamburger', { open: isMenuOpen }]"></span>
-      </button>
+
+      <div class="header-right">
+        <div class="user-info" @click="goToUserCenter">
+          <span class="user-name">{{ userStore.currentUser.name }}</span>
+          <span class="user-avatar">👤</span>
+        </div>
+        <button class="menu-btn" @click="toggleMenu">
+          <span :class="['hamburger', { open: isMenuOpen }]"></span>
+        </button>
+      </div>
     </div>
-    
+
     <nav v-show="isMenuOpen" class="nav-mobile">
       <AppNav />
     </nav>
@@ -87,6 +100,37 @@ const goHome = () => {
   font-size: 20px;
   font-weight: 600;
   letter-spacing: 1px;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  padding: 6px 12px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 20px;
+  transition: background 0.2s;
+}
+
+.user-info:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.user-name {
+  font-size: 14px;
+  color: white;
+  font-weight: 500;
+}
+
+.user-avatar {
+  font-size: 18px;
 }
 
 .menu-btn {
@@ -154,15 +198,15 @@ const goHome = () => {
   .app-nav {
     display: none;
   }
-  
+
   .menu-btn {
     display: block;
   }
-  
+
   .logo-text {
     font-size: 16px;
   }
-  
+
   .header-content {
     padding: 0 16px;
   }

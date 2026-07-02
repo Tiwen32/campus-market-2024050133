@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import type { Trade } from '@/api/trade'
-import { getFavoriteByTradeId, addFavorite, removeFavorite, type Favorite } from '@/api/favorite'
+import { useFavoriteStore } from '@/stores/favorite'
+import { addFavorite, removeFavorite } from '@/api/favorite'
 
 const props = defineProps<{
   product: Trade
@@ -11,8 +12,9 @@ const emit = defineEmits<{
   view: [product: Trade]
 }>()
 
-const isLiked = ref(false)
-const favoriteId = ref<number | null>(null)
+const favoriteStore = useFavoriteStore()
+
+const isLiked = computed(() => favoriteStore.isFavorite(props.product.id, 'trade'))
 const likes = ref(props.product.likes)
 
 const conditionText: Record<string, string> = {
@@ -29,44 +31,28 @@ const conditionColor: Record<string, string> = {
   'fair': '#e17055',
 }
 
-const checkFavoriteStatus = async () => {
-  try {
-    const response = await getFavoriteByTradeId(1, props.product.id)
-    if (response.data.length > 0) {
-      isLiked.value = true
-      favoriteId.value = response.data[0].id
-    }
-  } catch (error) {
-    console.error('检查收藏状态失败:', error)
-  }
-}
-
 const handleLike = async (e: Event) => {
   e.stopPropagation()
   if (isLiked.value) {
-    if (favoriteId.value) {
-      try {
-        await removeFavorite(favoriteId.value)
-        isLiked.value = false
-        favoriteId.value = null
-        likes.value--
-      } catch (error) {
-        console.error('取消收藏失败:', error)
-      }
-    }
-  } else {
+    favoriteStore.removeFavorite(props.product.id, 'trade')
     try {
-      const response = await addFavorite({
+      await removeFavorite(props.product.id)
+    } catch (error) {
+      console.error('取消收藏失败:', error)
+    }
+    likes.value--
+  } else {
+    favoriteStore.addFavorite(props.product, 'trade')
+    try {
+      await addFavorite({
         userId: 1,
         tradeId: props.product.id,
         createdAt: new Date().toLocaleString('zh-CN'),
       })
-      isLiked.value = true
-      favoriteId.value = response.data.id
-      likes.value++
     } catch (error) {
       console.error('添加收藏失败:', error)
     }
+    likes.value++
   }
 }
 
@@ -75,7 +61,6 @@ const handleView = () => {
 }
 
 onMounted(() => {
-  checkFavoriteStatus()
 })
 </script>
 
